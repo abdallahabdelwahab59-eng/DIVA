@@ -1,0 +1,26 @@
+{
+  "name": "diva",
+  "version": "1.0.0",
+  "description": "DIVA — AI Business Builder for creating, operating, and evolving multi-tenant digital businesses.",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdallahabdelwahab59-eng/DIVA.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/abdallahabdelwahab59-eng/DIVA/issues"
+  },
+  "homepage": "https://github.com/abdallahabdelwahab59-eng/DIVA#readme",
+  "private": true,
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}
