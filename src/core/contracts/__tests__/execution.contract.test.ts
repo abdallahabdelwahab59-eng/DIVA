@@ -12,6 +12,17 @@ describe("Execution Contract", () => {
         workspaceId: "workspace-1",
         projectId: "project-1",
       },
+      admission: {
+          admissionId: "admission-test-1",
+          executionId: "execution-test-1",
+          tenantId: "tenant-1",
+          projectId: "project-1",
+          operation: "test",
+          authorizationDecisionId: "decision-1",
+          policyVersion: "policy-v1",
+          issuedAt: 1000,
+          expiresAt: 2000,
+      },
       task: {
         id: "task-1",
         type: "test",

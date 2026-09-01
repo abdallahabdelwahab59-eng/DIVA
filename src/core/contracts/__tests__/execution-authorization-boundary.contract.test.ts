@@ -7,6 +7,17 @@ import type {
 describe("ExecutionAuthorizationBoundaryContract", () => {
   it("accepts execution when tenant and task contexts match", async () => {
     const context: ExecutionContext = {
+      admission: {
+        admissionId: "admission-auth-1",
+        executionId: "execution-auth-1",
+        tenantId: "tenant-auth-1",
+        projectId: "project-1",
+        operation: "process",
+        authorizationDecisionId: "decision-auth-1",
+        policyVersion: "policy-v1",
+        issuedAt: 1000,
+        expiresAt: 2000,
+      },
       tenant: {
         organizationId: "org-1",
         workspaceId: "workspace-1",
@@ -53,6 +64,17 @@ describe("ExecutionAuthorizationBoundaryContract", () => {
 
   it("rejects execution when tenant and task contexts do not match", async () => {
     const context: ExecutionContext = {
+          admission: {
+              admissionId: "admission-auth-2",
+              executionId: "execution-auth-2",
+              tenantId: "tenant-auth-2",
+              projectId: "project-1",
+              operation: "process",
+              authorizationDecisionId: "decision-auth-2",
+              policyVersion: "policy-v1",
+              issuedAt: 1000,
+              expiresAt: 2000,
+          },
       tenant: {
         organizationId: "org-1",
         workspaceId: "workspace-1",
