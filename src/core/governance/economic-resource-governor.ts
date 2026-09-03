@@ -80,16 +80,16 @@ export class EconomicResourceGovernor
   ): Promise<EconomicAdmissionDecision> {
     this.validateRequest(request);
 
-    if (this.policyResolver) {
-      const policy = await this.policyResolver.resolve(request.policyVersion);
+    const policy = this.policyResolver
+      ? await this.policyResolver.resolve(request.policyVersion)
+      : undefined;
 
-      if (policy === undefined || policy === null) {
-        return {
-          decision: "DENY",
-          reason: "UNKNOWN_ECONOMIC_POLICY",
-          policyVersion: request.policyVersion,
-        };
-      }
+    if (this.policyResolver && !policy) {
+      return {
+        decision: "DENY",
+        reason: "UNKNOWN_ECONOMIC_POLICY",
+        policyVersion: request.policyVersion,
+      };
     }
     this.expireReservations();
 
@@ -147,18 +147,17 @@ export class EconomicResourceGovernor
         ? (sellingPrice - directCost) / sellingPrice
         : undefined;
 
-    if (this.policyResolver) {
-      const policy = await this.policyResolver.resolve(request.policyVersion);
-      if (policy && policy.minimumGrossMargin !== undefined && calculatedGrossMargin !== undefined) {
-        if (calculatedGrossMargin < policy.minimumGrossMargin) {
-          return {
-            decision: "DENY",
-            reason: "GROSS_MARGIN_BELOW_POLICY_MINIMUM",
-            policyVersion: request.policyVersion,
-            calculatedGrossMargin,
-          };
-        }
-      }
+    if (
+      policy &&
+      calculatedGrossMargin !== undefined &&
+      calculatedGrossMargin < policy.minimumGrossMargin
+    ) {
+      return {
+        decision: "DENY",
+        reason: "GROSS_MARGIN_BELOW_POLICY_MINIMUM",
+        policyVersion: request.policyVersion,
+        calculatedGrossMargin,
+      };
     }
 
     return {
