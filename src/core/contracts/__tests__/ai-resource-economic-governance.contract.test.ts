@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type {
+  EconomicPolicy,
+  EconomicPolicyResolver,
   EconomicAdmissionDecision,
   EconomicAdmissionRequest,
   EconomicGovernanceContract,
@@ -155,4 +157,25 @@ describe("AI Resource & Economic Governance Contract Boundary", () => {
     expect(typeof contract.settle).toBe("function");
     expect(typeof contract.release).toBe("function");
   });
+});
+
+it("defines an immutable economic policy reference and resolver boundary", async () => {
+  const policy: EconomicPolicy = {
+    policyVersion: "economic-policy-v1",
+    minimumGrossMargin: 0.75,
+  };
+
+  const resolver: EconomicPolicyResolver = {
+    async resolve(policyVersion: string) {
+      if (policyVersion !== policy.policyVersion) {
+        return undefined;
+      }
+      return policy;
+    },
+  };
+
+  expect(policy.policyVersion).toBe("economic-policy-v1");
+  expect(policy.minimumGrossMargin).toBe(0.75);
+  await expect(resolver.resolve("economic-policy-v1")).resolves.toEqual(policy);
+  await expect(resolver.resolve("unknown-policy")).resolves.toBeUndefined();
 });

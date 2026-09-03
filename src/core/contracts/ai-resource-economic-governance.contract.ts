@@ -58,6 +58,15 @@ export interface ResourceConsumption {
   consumedUnits: number;
 }
 
+export interface EconomicPolicy {
+  policyVersion: string;
+  minimumGrossMargin: number;
+}
+
+export interface EconomicPolicyResolver {
+  resolve(policyVersion: string): Promise<EconomicPolicy | undefined>;
+}
+
 export interface EconomicGovernanceContract {
   admit(
     request: EconomicAdmissionRequest,
