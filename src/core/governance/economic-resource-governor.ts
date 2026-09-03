@@ -147,6 +147,20 @@ export class EconomicResourceGovernor
         ? (sellingPrice - directCost) / sellingPrice
         : undefined;
 
+    if (this.policyResolver) {
+      const policy = await this.policyResolver.resolve(request.policyVersion);
+      if (policy && policy.minimumGrossMargin !== undefined && calculatedGrossMargin !== undefined) {
+        if (calculatedGrossMargin < policy.minimumGrossMargin) {
+          return {
+            decision: "DENY",
+            reason: "GROSS_MARGIN_BELOW_POLICY_MINIMUM",
+            policyVersion: request.policyVersion,
+            calculatedGrossMargin,
+          };
+        }
+      }
+    }
+
     return {
       decision: "ALLOW",
       reason: "ECONOMIC_ADMISSION_ALLOWED",

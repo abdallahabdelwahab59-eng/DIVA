@@ -233,6 +233,83 @@ describe("EconomicResourceGovernor", () => {
       ),
     ).rejects.toThrow("UNKNOWN_AUTHORIZATION");
   });
+
+  it("allows admission when gross margin equals the economic policy minimum", async () => {
+    const policyResolver: EconomicPolicyResolver = {
+      async resolve(policyVersion: string) {
+        if (policyVersion !== "economic-policy-v1") {
+          return undefined;
+        }
+
+        return {
+          policyVersion: "economic-policy-v1",
+          minimumGrossMargin: 0.75,
+        };
+      },
+    };
+
+    const governor = new EconomicResourceGovernor({
+      allocatedUnits: 1000,
+      policyResolver,
+    });
+
+    const decision = await governor.admit(
+      request({
+        policyVersion: "economic-policy-v1",
+        commercialPrice: {
+          amount: 100,
+          currency: "EGP",
+        },
+        estimatedDirectCost: {
+          amount: 25,
+          currency: "EGP",
+        },
+      }),
+    );
+
+    expect(decision.decision).toBe("ALLOW");
+    expect(decision.reason).toBe("ECONOMIC_ADMISSION_ALLOWED");
+    expect(decision.calculatedGrossMargin).toBe(0.75);
+  });
+
+  it("denies admission when gross margin is below the economic policy minimum", async () => {
+    const policyResolver: EconomicPolicyResolver = {
+      async resolve(policyVersion: string) {
+        if (policyVersion !== "economic-policy-v1") {
+          return undefined;
+        }
+
+        return {
+          policyVersion: "economic-policy-v1",
+          minimumGrossMargin: 0.75,
+        };
+      },
+    };
+
+    const governor = new EconomicResourceGovernor({
+      allocatedUnits: 1000,
+      policyResolver,
+    });
+
+    const decision = await governor.admit(
+      request({
+        policyVersion: "economic-policy-v1",
+        commercialPrice: {
+          amount: 100,
+          currency: "EGP",
+        },
+        estimatedDirectCost: {
+          amount: 30,
+          currency: "EGP",
+        },
+      }),
+    );
+
+    expect(decision.decision).toBe("DENY");
+    expect(decision.reason).toBe("GROSS_MARGIN_BELOW_POLICY_MINIMUM");
+    expect(decision.calculatedGrossMargin).toBe(0.7);
+  });
+
 });
 
   it("fails closed when the economic policy version is unknown", async () => {
